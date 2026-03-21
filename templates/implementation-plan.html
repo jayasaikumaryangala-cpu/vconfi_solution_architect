@@ -1,0 +1,350 @@
+<!--
+  VConfi Implementation Plan — HTML Artifact Template
+  ====================================================
+  This is a REFERENCE TEMPLATE, not a monolithic output file.
+
+  USAGE: When generating each part as an HTML artifact in the browser,
+  copy the full <style> block and the per-part boilerplate below into
+  each artifact. Replace {{PLACEHOLDERS}} with actual project data.
+
+  Each artifact is STANDALONE — it includes the full CSS so it can be
+  printed to PDF independently. The user merges PDFs after all parts
+  are approved.
+-->
+
+<!-- ═══════════════════════════════════════════════════════
+     BOILERPLATE: Paste this skeleton into EVERY artifact,
+     then fill the <div class="content"> with the part's content.
+     ═══════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VConfi — {{PART_TITLE}}</title>
+<style>
+  /* ── Reset & Base ────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand-primary: #1A1A2E;
+    --brand-accent: #007ACC;
+    --brand-light: #F0F4F8;
+    --brand-white: #FFFFFF;
+    --brand-dark: #333333;
+    --brand-gray: #666666;
+    --brand-red: #CC0000;
+    --brand-green: #008000;
+    --brand-orange: #FF8C00;
+    --font-main: 'Segoe UI', Calibri, Arial, sans-serif;
+    --font-mono: 'Cascadia Code', Consolas, 'Courier New', monospace;
+  }
+
+  body {
+    font-family: var(--font-main);
+    font-size: 11pt;
+    color: var(--brand-dark);
+    line-height: 1.5;
+    background: var(--brand-white);
+  }
+
+  /* ── Part Header (replaces cover page on per-part artifacts) ── */
+  .part-header {
+    text-align: center;
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 3px solid var(--brand-accent);
+    margin-bottom: 2rem;
+  }
+
+  .part-header .company { font-size: 14pt; font-weight: 700; color: var(--brand-primary); }
+  .part-header .project { font-size: 11pt; color: var(--brand-gray); margin: 0.25rem 0; }
+  .part-header .part-title { font-size: 20pt; font-weight: 700; color: var(--brand-accent); margin: 0.75rem 0 0.25rem; }
+  .part-header .meta { font-size: 9pt; color: var(--brand-gray); }
+  .part-header .confidential { color: var(--brand-red); font-weight: 700; }
+
+  /* ── Cover Page (Part 1 only) ────────────────────────── */
+  .cover-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    page-break-after: always;
+    padding: 2rem;
+  }
+
+  .cover-page .company-name { font-size: 36pt; font-weight: 700; color: var(--brand-primary); margin-bottom: 0.25rem; }
+  .cover-page .company-sub { font-size: 16pt; color: var(--brand-gray); margin-bottom: 2rem; }
+  .cover-page .divider { width: 60%; height: 2px; background: var(--brand-accent); margin: 1.5rem auto; }
+  .cover-page .doc-title { font-size: 28pt; font-weight: 700; color: var(--brand-accent); margin-bottom: 0.5rem; }
+  .cover-page .project-name { font-size: 18pt; color: var(--brand-dark); margin-bottom: 2rem; }
+
+  .cover-info { border-collapse: collapse; margin: 0 auto; text-align: left; }
+  .cover-info td { padding: 0.35rem 1rem; font-size: 11pt; }
+  .cover-info .label { font-weight: 600; color: var(--brand-gray); text-align: right; }
+  .cover-info .value { color: var(--brand-dark); }
+
+  /* ── TOC (Part 1 only) ───────────────────────────────── */
+  .toc { page-break-after: always; padding: 2rem 3rem; }
+  .toc h1 { font-size: 22pt; color: var(--brand-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--brand-accent); padding-bottom: 0.5rem; }
+  .toc ul { list-style: none; padding: 0; }
+  .toc li { padding: 0.3rem 0; border-bottom: 1px dotted #ddd; }
+  .toc li a { text-decoration: none; color: var(--brand-dark); }
+  .toc li a:hover { color: var(--brand-accent); }
+  .toc li.toc-l1 { font-weight: 600; font-size: 11pt; }
+  .toc li.toc-l2 { padding-left: 1.5rem; font-size: 10pt; }
+
+  /* ── Content Area ────────────────────────────────────── */
+  .content { padding: 1rem 3rem 3rem; max-width: 900px; margin: 0 auto; }
+
+  /* ── Headings ────────────────────────────────────────── */
+  h1 { font-size: 22pt; color: var(--brand-primary); margin: 1.5rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 2px solid var(--brand-accent); page-break-after: avoid; }
+  h2 { font-size: 16pt; color: var(--brand-accent); margin: 1.25rem 0 0.5rem; page-break-after: avoid; }
+  h3 { font-size: 13pt; color: var(--brand-primary); margin: 1rem 0 0.4rem; page-break-after: avoid; }
+  h4 { font-size: 11pt; color: var(--brand-accent); font-weight: 600; margin: 0.75rem 0 0.3rem; }
+
+  /* ── Paragraphs & Lists ──────────────────────────────── */
+  p { margin: 0.4rem 0; }
+  ul, ol { margin: 0.4rem 0 0.4rem 1.5rem; }
+  li { margin: 0.2rem 0; }
+
+  /* ── Tables ──────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 9.5pt; page-break-inside: auto; }
+  thead { display: table-header-group; }
+  thead th { background: var(--brand-accent); color: var(--brand-white); font-weight: 600; text-align: center; padding: 0.5rem 0.6rem; border: 1px solid var(--brand-accent); white-space: nowrap; }
+  tbody td { padding: 0.4rem 0.6rem; border: 1px solid #ddd; vertical-align: top; word-wrap: break-word; overflow-wrap: break-word; }
+  tbody tr:nth-child(even) { background: var(--brand-light); }
+  tbody tr:hover { background: #e2eaf2; }
+  tr { page-break-inside: avoid; }
+
+  /* ── Table Wrapper (horizontal scroll on small screens) ── */
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.75rem 0; }
+  .table-wrapper table { margin: 0; }
+
+  /* ── Table Variants ────────────────────────────────────── */
+  /* Compact: for BOM, cabling schedule, port assignment (many rows) */
+  table.table-compact { font-size: 8.5pt; }
+  table.table-compact thead th { padding: 0.3rem 0.4rem; font-size: 8.5pt; }
+  table.table-compact tbody td { padding: 0.25rem 0.4rem; }
+
+  /* Wide: for ISO mapping, correlation rules (long text in cells) */
+  table.table-wide { table-layout: fixed; }
+  table.table-wide tbody td { word-wrap: break-word; overflow-wrap: break-word; hyphens: auto; }
+  table.table-wide thead th { white-space: normal; }
+
+  /* ── Column Width Classes (apply to th or td) ──────────── */
+  .col-5  { width: 5%; }   .col-8  { width: 8%; }
+  .col-10 { width: 10%; }  .col-12 { width: 12%; }
+  .col-15 { width: 15%; }  .col-20 { width: 20%; }
+  .col-25 { width: 25%; }  .col-30 { width: 30%; }
+  .col-35 { width: 35%; }  .col-40 { width: 40%; }
+
+  /* ── BOM Special Rows ────────────────────────────────── */
+  tr.category-row td { background: var(--brand-primary); color: var(--brand-white); font-weight: 600; font-size: 10pt; padding: 0.45rem 0.6rem; }
+  tr.subtotal-row td { font-weight: 600; background: #e8f0fe; border-top: 2px solid var(--brand-accent); }
+  tr.grand-total-row td { font-weight: 700; font-size: 11pt; background: var(--brand-primary); color: var(--brand-white); border-top: 3px solid var(--brand-accent); }
+
+  /* ── Severity Badges ─────────────────────────────────── */
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 8.5pt; font-weight: 700; text-transform: uppercase; color: var(--brand-white); }
+  .badge-critical { background: var(--brand-red); }
+  .badge-high     { background: #FF4500; }
+  .badge-medium   { background: var(--brand-orange); }
+  .badge-low      { background: var(--brand-green); }
+  .badge-info     { background: var(--brand-gray); }
+  .badge-planned  { background: var(--brand-accent); }
+
+  /* ── Code Blocks ─────────────────────────────────────── */
+  pre { background: #f6f8fa; border: 1px solid #e1e4e8; border-left: 3px solid var(--brand-accent); padding: 0.75rem 1rem; font-family: var(--font-mono); font-size: 9pt; overflow-x: auto; margin: 0.5rem 0; border-radius: 4px; }
+  code { font-family: var(--font-mono); font-size: 9pt; background: #f0f4f8; padding: 0.1rem 0.3rem; border-radius: 3px; color: var(--brand-accent); }
+  pre code { background: none; padding: 0; color: var(--brand-dark); }
+
+  /* ── Mermaid Diagrams ────────────────────────────────── */
+  .mermaid { text-align: center; margin: 1rem 0; padding: 1rem; background: #fafbfc; border: 1px solid #e1e4e8; border-radius: 6px; }
+
+  /* ── Checkboxes ──────────────────────────────────────── */
+  .checklist { list-style: none; padding-left: 0.5rem; }
+  .checklist li::before { content: "☐ "; font-size: 12pt; color: var(--brand-gray); }
+  .checklist li.checked::before { content: "☑ "; color: var(--brand-green); }
+
+  /* ── Blockquotes ─────────────────────────────────────── */
+  blockquote { border-left: 3px solid var(--brand-accent); margin: 0.75rem 0; padding: 0.5rem 1rem; background: var(--brand-light); color: var(--brand-gray); font-style: italic; }
+
+  /* ── Info Boxes ───────────────────────────────────────── */
+  .info-box { padding: 0.75rem 1rem; margin: 0.75rem 0; border-radius: 4px; font-size: 10pt; }
+  .info-box.note     { background: #e8f4fd; border-left: 4px solid var(--brand-accent); }
+  .info-box.warning  { background: #fff8e1; border-left: 4px solid var(--brand-orange); }
+  .info-box.critical { background: #fde8e8; border-left: 4px solid var(--brand-red); }
+  .info-box.success  { background: #e8f5e9; border-left: 4px solid var(--brand-green); }
+
+  /* ── SOP Headers ─────────────────────────────────────── */
+  .sop-header { background: var(--brand-light); border: 1px solid #ddd; padding: 0.75rem 1rem; margin: 1rem 0 0.5rem; border-radius: 4px; }
+  .sop-header h3 { margin: 0; color: var(--brand-primary); }
+  .sop-header p  { margin: 0.2rem 0 0; font-size: 9.5pt; color: var(--brand-gray); }
+
+  /* ── Escalation Levels ───────────────────────────────── */
+  .escalation-l1 { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 3px; font-size: 8.5pt; font-weight: 600; background: #e8f5e9; color: var(--brand-green); }
+  .escalation-l2 { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 3px; font-size: 8.5pt; font-weight: 600; background: #fff8e1; color: #e68900; }
+  .escalation-l3 { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 3px; font-size: 8.5pt; font-weight: 600; background: #fde8e8; color: var(--brand-red); }
+
+  /* ── Footer ──────────────────────────────────────────── */
+  .page-footer { text-align: center; font-size: 8pt; color: var(--brand-gray); padding: 1rem 0; border-top: 1px solid #e1e4e8; margin-top: 3rem; }
+
+  /* ── Print Styles ────────────────────────────────────── */
+  @media print {
+    body { font-size: 10pt; }
+    .cover-page { min-height: 100vh; }
+    .content { padding: 0.5rem 1rem; max-width: none; }
+    h1, h2, h3, h4 { page-break-after: avoid; }
+    table, pre, .mermaid, .info-box { page-break-inside: avoid; }
+    tr { page-break-inside: avoid; }
+    thead { display: table-header-group; } /* repeat headers on every printed page */
+    tbody tr:hover { background: inherit; }
+    @page { size: A4; margin: 2cm 2cm 2.5cm 2cm; }
+    .page-footer { display: none; }
+    a { color: var(--brand-dark); text-decoration: none; }
+    .table-wrapper { overflow-x: visible; } /* no scroll bar on print */
+    table.table-compact { font-size: 8pt; }
+    table.table-compact thead th { padding: 0.2rem 0.3rem; }
+    table.table-compact tbody td { padding: 0.2rem 0.3rem; }
+  }
+
+  /* ── Tablet (768px - 1024px) ───────────────────────────── */
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    .content { padding: 1rem 2rem; }
+    table { font-size: 9pt; }
+    thead th { padding: 0.4rem 0.5rem; }
+    tbody td { padding: 0.35rem 0.5rem; }
+  }
+
+  /* ── Mobile (< 768px) ──────────────────────────────────── */
+  @media screen and (max-width: 768px) {
+    .content { padding: 1rem; }
+    table { font-size: 8.5pt; }
+    thead th, tbody td { padding: 0.3rem; }
+    /* Pin first column on scroll for wide tables */
+    .table-wrapper table thead th:first-child,
+    .table-wrapper table tbody td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: var(--brand-white);
+    }
+    .table-wrapper table thead th:first-child {
+      background: var(--brand-accent);
+      z-index: 2;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PART HEADER (use on Parts 2-6) ──────────────────── -->
+<div class="part-header">
+  <div class="company">VConfi Solutions</div>
+  <div class="project">{{PROJECT_NAME}} — {{CLIENT_NAME}}</div>
+  <div class="part-title">{{PART_TITLE}}</div>
+  <div class="meta">{{DATE}} &nbsp;|&nbsp; <span class="confidential">CONFIDENTIAL</span></div>
+</div>
+
+<!-- ── CONTENT ─────────────────────────────────────────── -->
+<div class="content">
+
+  <!-- Replace this with the actual part content -->
+
+</div>
+
+<!-- ── FOOTER ──────────────────────────────────────────── -->
+<div class="page-footer">
+  VConfi Solutions &nbsp;|&nbsp; CONFIDENTIAL &nbsp;|&nbsp; {{DATE}}
+</div>
+
+<!-- Mermaid.js — renders diagrams in browser -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+</body>
+</html>
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  QUICK REFERENCE: HTML elements to use in each part
+  ═══════════════════════════════════════════════════════════
+
+  COVER PAGE (Part 1 only — replace part-header with this):
+  <section class="cover-page">
+    <div class="company-name">VConfi Solutions</div>
+    <div class="company-sub">IT Infrastructure Solutions</div>
+    <div class="divider"></div>
+    <div class="doc-title">Implementation Plan</div>
+    <div class="project-name">{{PROJECT_NAME}}</div>
+    <div class="divider"></div>
+    <table class="cover-info">
+      <tr><td class="label">Client:</td><td class="value">{{CLIENT_NAME}}</td></tr>
+      <tr><td class="label">Prepared By:</td><td class="value">VConfi Solutions Team</td></tr>
+      <tr><td class="label">Date:</td><td class="value">{{DATE}}</td></tr>
+      <tr><td class="label">Classification:</td><td class="value confidential">CONFIDENTIAL</td></tr>
+    </table>
+  </section>
+
+  TABLE (standard — wrap in .table-wrapper for scroll support):
+  <div class="table-wrapper">
+  <table>
+    <thead><tr><th>Col 1</th><th>Col 2</th></tr></thead>
+    <tbody>
+      <tr><td>Data</td><td>Data</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  TABLE VARIANTS:
+  <table class="table-compact">  — BOM, cabling, port assignment (>20 rows, tight layout)
+  <table class="table-wide">     — ISO mapping, correlation rules (cells with long text)
+  Combine: <table class="table-compact table-wide"> for compact + word-wrapped
+
+  COLUMN WIDTHS (apply to th):
+  <th class="col-10">Narrow</th>  <th class="col-25">Medium</th>  <th class="col-40">Wide</th>
+  Available: .col-5, .col-8, .col-10, .col-12, .col-15, .col-20, .col-25, .col-30, .col-35, .col-40
+
+  BOM CATEGORY ROW:    <tr class="category-row"><td colspan="8">Category Name</td></tr>
+  BOM SUBTOTAL ROW:    <tr class="subtotal-row"><td colspan="6"></td><td>Subtotal</td><td>₹X</td></tr>
+  BOM GRAND TOTAL:     <tr class="grand-total-row"><td colspan="6"></td><td>Grand Total</td><td>₹X</td></tr>
+
+  SEVERITY BADGE:      <span class="badge badge-critical">Critical</span>
+                       <span class="badge badge-high">High</span>
+                       <span class="badge badge-medium">Medium</span>
+                       <span class="badge badge-low">Low</span>
+                       <span class="badge badge-info">Info</span>
+                       <span class="badge badge-planned">Planned</span>
+
+  SOP HEADER:
+  <div class="sop-header">
+    <h3>SOP-XXX-001: Title</h3>
+    <p>Audience: Role &nbsp;|&nbsp; Review Cycle: Quarterly</p>
+  </div>
+
+  INFO BOXES:
+  <div class="info-box note">Note text</div>
+  <div class="info-box warning">Warning text</div>
+  <div class="info-box critical">Critical text</div>
+  <div class="info-box success">Success text</div>
+
+  CHECKLIST:
+  <ul class="checklist">
+    <li>Unchecked item</li>
+    <li class="checked">Checked item</li>
+  </ul>
+
+  ESCALATION LEVELS:
+  <span class="escalation-l1">L1 Support</span>
+  <span class="escalation-l2">L2 Engineer</span>
+  <span class="escalation-l3">L3 Escalation</span>
+
+  MERMAID DIAGRAM:
+  <div class="mermaid">
+    graph TD
+      A[Start] --> B[End]
+  </div>
+
+  CODE BLOCK:
+  <pre><code>config commands here</code></pre>
+-->
