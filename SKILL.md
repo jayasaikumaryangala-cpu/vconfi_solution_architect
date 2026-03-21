@@ -1,6 +1,6 @@
 ---
 name: vconfi-solution-architect
-description: Design and plan secure, optimized IT infrastructure solutions for VConfi. Use when building network architecture, server deployments, firewall configurations, IT implementation plans, solution design, infrastructure proposals, or when the user mentions VConfi, implementation plan, network design, Fortinet, HPE, Cisco, or IT infrastructure. Generates detailed implementation plans with BOMs, architectural diagrams, DR planning, and ISO 27001 compliance documentation — all priced in INR.
+description: Design and plan secure, optimized IT infrastructure solutions for VConfi. Use when building network architecture, server deployments, firewall configurations, IT implementation plans, solution design, infrastructure proposals, or when the user mentions vconfi solution architect, VConfi, implementation plan, network design, Fortinet, HPE, Cisco, or IT infrastructure. Generates detailed implementation plans with BOMs, architectural diagrams, DR planning, and ISO 27001 compliance documentation — all priced in INR.
 argument-hint: "client name or project brief"
 disable-model-invocation: true
 ---
