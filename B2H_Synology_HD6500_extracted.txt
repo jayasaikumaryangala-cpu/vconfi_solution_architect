@@ -1,0 +1,124 @@
+B2H STUDIOS
+INFRASTRUCTURE SOLUTION
+OPTION B - SYNOLOGY HD6500
+400TB On-Prem NAS  |  Site A + Site B DR  |  ZTNA Remote Access  |  Wasabi Cloud  |  Signiant Jet v7.0
+CONFIDENTIAL - RESTRICTED DISTRIBUTION
+Prepared for: B2H Studios - CTO, IT Lead
+March 2026  |  Pricing in INR including 18% GST  |  No import duties applicable
+Companion document: Option A - Dell PowerScale F710 (separate file)
+Table of Contents
+1. Executive Summary
+This document presents the complete infrastructure design for B2H Studios using Synology HD6500 as the primary NAS storage platform. The solution delivers 400TB usable storage across two locations (Site A primary data centre, Site B disaster recovery), secure remote access for 25 employees via ZTNA, cloud integration via Wasabi Hot Cloud Storage using Synology Hybrid Share, and high-speed media ingest via Signiant Jet v7.0.
+The Synology HD6500 is a 60-bay enterprise NAS running DSM 7.x (DiskStation Manager), purpose-built for dense storage at significantly lower capital cost than all-flash enterprise alternatives. It uses high-capacity SAS/SATA hard drives, delivering excellent TB-per-rupee value for a studio where primary NAS performance does not need to be all-NVMe - editors work on proxy files stored locally, and the NAS holds originals and archives.
+1.1 Option A vs Option B - At a Glance
+This document and its companion document (Option A - Dell PowerScale F710) allow B2H leadership to compare two architecturally different approaches. Before the detailed design, here is the key trade-off:
+1.2 Why Synology HD6500 for B2H Studios
+2. Architecture Overview - Two-Site Design
+The Synology design mirrors the logical architecture of Option A in terms of security zones, VLAN design, and remote access model. The difference is at the storage layer: Synology HD6500 replaces PowerScale F710, DSM replaces OneFS, and Hybrid Share replaces CloudPools. All other components - FortiGate, HPE switches, Signiant, Wasabi, Vault - are sized appropriately for 10GbE networking instead of 25GbE.
+2.1 Site A - Primary Data Centre
+Synology HD6500: 60-bay 4U unit. 60x 18TB SAS = 1,080TB raw. RAID6 (56+4): ~936TB usable. SSD cache tier with 4x 3.84TB NVMe for hot data acceleration.
+Dell PowerEdge R760 application server: VMs - Signiant SDCX, Aspera fallback, FortiAnalyzer, FortiClient EMS, FortiAuthenticator, HashiCorp Vault, Kaspersky Security Centre.
+FortiGate 120G HA pair: active-passive. SD-WAN dual ISP. ZTNA enforcement. Same as Option A.
+2x HPE Aruba CX 6300M switches (VSX stacked): 48x10GbE + 4x25GbE SFP28 uplinks. HD6500 4x10GbE front-end ports connect via LACP (40 Gbps per unit) across both switches.
+2x 10kVA UPS + ATS: Site A power protection.
+2.2 Site B - Disaster Recovery
+Synology HD6500: 60-bay DR unit. Replication target for Site A active projects and deliverables. RPO: 15 minutes (active projects), 4 hours (archive).
+FortiGate 120G HA pair: perimeter security. Employees failover ZTNA to Site B FortiGate if Site A is unavailable.
+2x HPE Aruba CX 6300M switches (VSX stacked): identical to Site A.
+Dell PowerEdge R760 (DR, lighter spec): FortiAnalyzer secondary + Vault DR node.
+2.3 Five-Zone VLAN Security Architecture
+3. Synology HD6500 - Storage Architecture
+Why HD6500 for Media:  The Synology HD6500 is a 60-bay enterprise NAS running DSM 7.x. It is designed for dense, cost-effective storage at scale. Synology is the world's largest NAS vendor by unit volume. DSM is the most administrator-friendly NAS OS available - the web UI is intuitive, tasks that take CLI expertise on OneFS are done in a few clicks on DSM. For a studio without a full-time storage admin, this operational simplicity is a significant advantage.
+3.1 Hardware Specification
+3.2 Capacity Planning
+3.3 Shared Folder and Volume Design (Site A)
+3.4 Synology Replication Manager - DR to Site B
+Create a replication task in Synology Replication Manager: source = Site A HD6500, destination = Site B HD6500. Shared folders: projects/active/, deliverables/.
+Replication schedule: real-time replication (every 5 minutes) for projects/active/. Scheduled daily replication for archive/.
+Bandwidth throttle: set replication to use maximum 80% of WAN link during business hours, 100% overnight. Ensures replication does not impact ZTNA employee performance.
+Failover: if Site A is unavailable, IT promotes the Site B replication target to writable in Replication Manager. Employees update ZTNA profile to connect to Site B FortiGate. Recovery time: under 10 minutes.
+Failback: when Site A recovers, create a reverse replication task from Site B to Site A to sync any changes made during the failover period. Then fail forward back to Site A as primary.
+4. Network Design - HPE Aruba CX 6300M + FortiGate 120G
+4.1 Why HPE Aruba CX 6300M for Synology HD6500
+The Synology HD6500 has 4x 10GbE RJ45 front-end ports. The HPE Aruba CX 6300M is the correct match: 48x1GbE access ports with 4x25GbE SFP28 or 4x10GbE SFP28 uplinks, and VSX stacking (Virtual Switching Extension) for logical dual-chassis redundancy. The 10GbE connectivity from HD6500 bonds across two CX 6300M switches via LACP for 40 Gbps aggregate throughput and switch redundancy.
+4.2 10GbE EtherChannel - HD6500 to HPE Switch
+4.3 HPE Aruba CX 6300M - Key Configuration
+! VSX stack - SW-1 is primary, SW-2 is secondary
+vsx
+  system-mac 02:01:00:00:01:00
+  inter-switch-link lag 256
+! LACP trunk for HD6500
+interface lag 1
+  lacp mode active
+  vlan trunk native 1
+  vlan trunk allowed 30
+  spanning-tree port-type admin-edge
+interface 1/1/49,1/1/50,2/1/49,2/1/50
+  lag 1
+! MTU 9000 jumbo frames for NAS performance
+interface lag 1
+  mtu 9000
+4.4 FortiGate 120G HA - Configuration Summary
+Identical HA configuration to Option A. FortiGate 120G active-passive pair at Site A and Site B. ZTNA enforcement for 25 remote employees. SD-WAN dual ISP. Day-1 hardening applied on deployment.
+HA heartbeat: dedicated 1GbE RJ45 between both FortiGate units. Private subnet 169.254.0.0/30.
+ZTNA proxy: FortiGate terminates all 25 employee ZTNA sessions. Grants access to NAS shares only. No lateral network movement possible.
+Geo-filtering: Signiant FASP UDP 33001 inbound restricted to countries where DITs and field crews operate. Reduces attack surface.
+Day-1 critical: disable FortiCloud SSO immediately after first boot. CLI: config system global > set admin-cloud-sso disable > end.
+5. Security Architecture - Zero Trust for 25 Remote Employees
+5.1 Remote Access - FortiClient ZTNA
+Security architecture is identical to Option A. All 25 employees connect via FortiClient ZTNA. TPM-backed certificates, FortiAuthenticator MFA (FortiToken push), FortiClient EMS device posture checks. No VPN. ZTNA grants access only to approved file shares, never to the broader network.
+5.2 DSM Security Hardening
+DSM admin account: disable default 'admin' account. Create named admin accounts only. Enable 2FA on all DSM admin accounts (FortiAuthenticator TOTP or Synology Secure SignIn).
+DSM network access: DSM management interface (VLAN 40 only). The HD6500 NFS/SMB shares are on VLAN 30. Admin panel is never reachable from VLAN 20 (production employees) or internet.
+Snapshot protection: enable DSM Snapshot Replication for all shared folders. If ransomware encrypts files on the NAS, IT can restore to the last clean snapshot. Retention: every 2 hours, 24 copies, plus daily for 30 days.
+Immutable snapshots: enable write protection on snapshots via DSM Snapshot > Lock. Locked snapshots cannot be deleted or modified by ransomware even if it reaches admin-level DSM access.
+Firewall rules in DSM: enable the built-in DSM firewall. Allow NFS (port 2049, 111) from VLAN 20 and VLAN 10 only. Allow SMB (port 445) from VLAN 20 only. Deny all other source IPs.
+5.3 FortiAnalyzer - Centralised Logging
+FortiAnalyzer VM receives logs from FortiGate 120G (both sites), FortiClient EMS, FortiAuthenticator, DSM syslog (HD6500 sends syslog to FortiAnalyzer), Kaspersky Security Centre.
+Custom alert: trigger on any honeypot directory access (DSM Audit > create honeypot folder, FortiAnalyzer correlation rule fires if accessed). First sign of ransomware or insider threat.
+90-day on-prem log retention. Older logs archived to Wasabi.
+6. Cloud Integration - Wasabi + Synology Hybrid Share
+6.1 Wasabi Hot Cloud Storage - Why It Wins for B2H
+The cloud provider recommendation is identical for both options. Wasabi at Rs.498/TB/month with zero egress fees is 75% cheaper than AWS S3 and eliminates unpredictable egress bills when archival footage needs to be retrieved. Synology has a native, built-in integration with Wasabi via Hybrid Share - no third-party software needed.
+6.2 Synology Hybrid Share Configuration with Wasabi
+Synology Hybrid Share is built into DSM 7.x. It allows any DSM shared folder to be backed by a Wasabi cloud bucket. Files are pinned locally if recently accessed and evicted to cloud-only if storage pressure rises. The folder appears local to all SMB/NFS clients.
+Setup in DSM: Control Panel > Shared Folder > [folder name] > Enable Hybrid Share. Select cloud service: S3-compatible. Enter Wasabi endpoint: s3.ap-southeast-1.wasabisys.com. Enter bucket name: b2h-studio-archive. Access key and secret retrieved from HashiCorp Vault.
+Pin policy: mark projects/active/ as always-pinned (data stays local for working projects). Set archive/ to evict-on-pressure (data moves to Wasabi when NAS fills above 80% capacity).
+Object Lock: enable Wasabi Object Lock on the b2h-studio-archive bucket. Deliverables folder tiered to Wasabi is protected by WORM object lock for 7 years.
+Cache management: the 15.36TB NVMe SSD cache tier in the HD6500 serves as the hot layer for Hybrid Share. Frequently accessed archived footage is served from SSD cache. Less frequently accessed from HDD. Rarely accessed from Wasabi recall.
+Bandwidth control: DSM Network > Traffic Control > limit Hybrid Share upload to 50 Mbps during 09:00-21:00. Unlimited 22:00-06:00. Ensures cloud sync never impacts employee NAS performance.
+6.3 Wasabi Cost Projection
+7. Signiant Jet v7.0 - Media Ingest Architecture
+7.1 SDCX Server - Dell PowerEdge R760 Application Server
+The Signiant SDCX server runs as a VM on the Dell R760 application server at Site A. This is the recommended approach: dedicated enterprise server, independent of the NAS, with controlled access between the DMZ (VLAN 10, where ingest arrives) and the Storage network (VLAN 30, where the HD6500 lives).
+7.2 Ingest Workflow End-to-End
+DIT at remote location opens Signiant Jet client on their field laptop or workstation.
+FortiClient ZTNA checks device posture. Kaspersky active, OS current, disk encrypted - required. Fail = connection blocked.
+FortiAuthenticator MFA: username + FortiToken push. Session ZTNA certificate validated by FortiGate.
+Signiant FASP transfer: UDP 33001, parallel streams, 90% of available bandwidth. On 100 Mbps: 85-95 Mbps effective.
+Transfer lands on Signiant SDCX VM (VLAN 10). FortiGate Rule 102: permits SDCX IP to write NFS to HD6500 /ingest/ on VLAN 30.
+Automation runs SHA-256 checksum against Signiant manifest. Mismatch = alert to IT + production coordinator.
+Verified footage moved to \\NAS\projects\active\[project]\. DSM takes snapshot within 5 minutes.
+Notification sent to production coordinator: transfer complete, checksum verified.
+8. Complete Bill of Materials - INR Pricing (18% GST inclusive)
+Pricing note:  All prices are estimates including 18% GST as applicable in India. No import duties apply as confirmed. Formal quotes must be obtained from Synology India, Fortinet India, HPE India, and authorised distributors before purchasing. Prices are indicative as of March 2026.
+8.1 Storage - Synology HD6500 (Both Sites)
+8.2 Network and Security (Both Sites)
+8.3 Application Servers
+8.4 Software and Subscriptions
+8.5 Power - UPS and ATS (Site A)
+8.6 Professional Services
+8.7 Grand Total Summary - Option B Synology HD6500
+8.8 Option A vs Option B - Financial Comparison
+Recommendation for cost-conscious build:  If B2H Studios operates a proxy-first workflow (editors work on local proxies, conform to originals on delivery) and does not need real-time 8K RAW streaming from NAS, Option B (Synology HD6500) at Rs. 2.16 Crore delivers all required functionality at 85% lower capital cost than Option A. The Rs. 12.12 Crore saved can fund expanded cloud infrastructure, additional staffing, or equipment upgrades.
+9. Implementation Roadmap - 12 Weeks (Both Sites)
+Synology HD6500 deploys faster than PowerScale F710 due to simpler single-unit architecture and DSM's guided setup wizard. Site A is operational in 8 weeks. Site B DR is online in week 12.
+10. Operational Maintenance and Security Hygiene
+10.1 Routine Maintenance Schedule
+10.2 Critical Runbooks
+DSM drive failure response: hot-swap failed drive (no downtime with RAID6 and 2-drive tolerance). Monitor RAID rebuild progress in DSM Storage Manager.
+Synology Replication failover: promote Site B as primary in Replication Manager. Update employee ZTNA profile to Site B FortiGate.
+Ransomware response: Kaspersky auto-detects. Isolate employee device via KSC. Roll back affected shares via DSM Snapshot > Restore.
+ZTNA device compromise: revoke FortiClient EMS certificate in under 2 minutes. Disable AD/LDAP account.
+Vault unseal: 3 of 5 Shamir key holders. All key holders have sealed envelopes in known secure locations.
+DSM admin lockout: use Opengear console server serial access to FortiGate OOB port. Reset via safe mode boot.
