@@ -1,41 +1,58 @@
-# Project History
+# Project Records
 
-Each project file follows this format:
+Store completed project summaries for reference and institutional knowledge.
+
+## Template
 
 ```markdown
-# <Project Name>
+# [Client] — [Project Name]
 
-- **Client:** <client name>
-- **Date:** <start date — end date>
-- **Status:** <planned | in-progress | completed | on-hold>
-- **Budget:** <INR amount>
-- **Actual Cost:** <INR amount>
+- **Date Completed:** YYYY-MM-DD
+- **Project Value:** [INR amount]
+- **Duration:** [Weeks/months]
+- **Team:** [VConfi team members]
 
 ## Scope
-- <what was delivered>
 
-## Key Design Decisions
-| Decision | Choice Made | Reasoning | Outcome |
-|----------|------------|-----------|---------|
-| Firewall | FortiGate 200F | 200 users, dual ISP | Worked well |
-| Switches | Aruba CX 6300 | Client wanted cloud-managed | Good choice |
+[What was delivered]
 
-## Devices Deployed
-| Device | Model | Qty | Status | Notes |
-|--------|-------|-----|--------|-------|
-| Firewall | FG-200F | 2 | Active | HA pair |
+## Architecture Highlights
 
-## Issues Encountered
-| Issue | Impact | Resolution | Lesson ID |
-|-------|--------|------------|-----------|
-| <issue> | <impact> | <what fixed it> | LESSON-XXX |
+- Firewall: [Model]
+- Switches: [Models, count]
+- Servers: [Models, count]
+- Wireless: [AP count, coverage]
+- Backup: [Solution]
+- Monitoring: [Zabbix/Splunk setup]
 
-## User Feedback
-- <what the client/team said about the implementation>
+## Challenges & Solutions
 
-## What Worked Well
-- <approaches to repeat>
+| Challenge | Solution |
+|-----------|----------|
+| [Problem] | [How we solved it] |
 
-## What To Improve Next Time
-- <what to change>
+## Outcome
+
+[Success metrics, client feedback]
+
+## Post-Deployment Notes
+
+- [Any issues that arose]
+- [Warranty/AMC details]
+- [Future expansion recommendations]
 ```
+
+## Why Project Records Matter
+
+- **Reference designs:** "Similar to what we did for X client"
+- **Accurate estimates:** "Last similar project was Y weeks"
+- **Lesson extraction:** Document what worked and what didn't
+- **Portfolio:** Showcase expertise to new clients
+
+## File Naming
+
+Format: `YYYY-MM_ClientName_ProjectBrief.md`
+
+Examples:
+- `2026-03_AcmeCorp_NetworkModernization.md`
+- `2026-02_GlobalTech_DRSetup.md`
