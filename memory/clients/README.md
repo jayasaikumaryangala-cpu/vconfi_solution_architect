@@ -1,39 +1,39 @@
 # Client Profiles
 
-Each client file follows this format:
+Store profiles for each client to pre-fill preferences and maintain institutional knowledge.
 
-```markdown
-# <Client Name>
+## Files
 
-- **Industry:** <industry>
-- **Location:** <city, state>
-- **Size:** <number of employees/endpoints>
-- **IT Maturity:** <low | medium | high>
-- **IT Team:** <yes/no, size>
-- **First Engagement:** <date>
-- **Last Engagement:** <date>
+| File | Description |
+|------|-------------|
+| [TEMPLATE.md](TEMPLATE.md) | Template for creating new client profiles |
+| [Sample-Manufacturing-Corp.md](Sample-Manufacturing-Corp.md) | Example profile — reference this format |
 
-## Non-Negotiables
-- <list their absolute requirements>
+## Creating a New Client Profile
 
-## Pain Points
-- <past issues they've experienced>
+1. Copy `TEMPLATE.md`
+2. Rename to `<client-name>.md` (use hyphens, no spaces)
+3. Fill in all sections
+4. Update [memory_index.md](../memory_index.md) with the new client
 
-## Vendor Preferences
-- <preferred vendors or vendors to avoid, with reasons>
+## Why Client Profiles Matter
 
-## Compliance Requirements
-- <ISO 27001, PCI-DSS, HIPAA, etc.>
+- **Faster onboarding:** Don't ask the same questions twice
+- **Consistent preferences:** "They always want HPE over Cisco"
+- **Historical context:** "Last time they had issues with X"
+- **Relationship continuity:** Different team members can pick up where others left off
 
-## Infrastructure History
-- <what they currently have>
-- <what we've deployed for them>
+## Sensitive Information
 
-## Contact
-- **Decision Maker:** <name, role>
-- **Technical Contact:** <name, role>
-- **Email:** <email>
+⚠️ **Do NOT store in these profiles:**
+- Passwords or credentials
+- IP addresses or network details
+- Actual security findings
+- Financial data beyond budget ranges
 
-## Notes
-- <any special considerations, cultural notes, communication preferences>
-```
+✅ **Safe to store:**
+- Company name, industry, size
+- Contact names and roles
+- Vendor preferences
+- Pain points and requirements
+- Past project summaries
